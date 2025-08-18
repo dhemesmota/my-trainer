@@ -1,12 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWorkout } from '@/contexts/WorkoutContext';
 
 export const TestProgress: React.FC = () => {
   const { workout, completeSet, resetProgress } = useWorkout();
+  const [mounted, setMounted] = useState(false);
+
+  // Evitar erro de hidratação
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleTestProgress = () => {
     // Simular progresso em alguns exercícios
@@ -37,6 +43,54 @@ export const TestProgress: React.FC = () => {
   };
 
   const progress = getProgressSummary();
+
+  // Não renderizar até estar no cliente
+  if (!mounted) {
+    return (
+      <Card className="mb-6 border-yellow-200 bg-yellow-50">
+        <CardHeader>
+          <CardTitle className="text-lg text-yellow-800">
+            🧪 Teste de Persistência
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <strong>Exercícios:</strong> 0/0
+              </div>
+              <div>
+                <strong>Séries:</strong> 0/0
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled
+              >
+                Carregando...
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                disabled
+              >
+                Carregando...
+              </Button>
+            </div>
+            
+            <div className="text-xs text-yellow-700">
+              <p>💡 Carregando dados...</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mb-6 border-yellow-200 bg-yellow-50">

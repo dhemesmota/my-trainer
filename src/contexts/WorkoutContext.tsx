@@ -39,8 +39,13 @@ const initializeWorkoutWithProgress = (workout: WorkoutWeek): WorkoutWeekWithPro
   };
 };
 
-// Função para carregar progresso salvo
+// Função para carregar progresso salvo (apenas no cliente)
 const loadSavedProgress = (workout: WorkoutWeekWithProgress): WorkoutWeekWithProgress => {
+  // Verificar se estamos no cliente
+  if (typeof window === 'undefined') {
+    return workout;
+  }
+
   try {
     const savedProgress = localStorage.getItem('workout-progress');
     if (savedProgress) {
@@ -78,7 +83,7 @@ const loadSavedProgress = (workout: WorkoutWeekWithProgress): WorkoutWeekWithPro
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [workout, setWorkout] = useState<WorkoutWeekWithProgress>(() => {
     const initialWorkout = initializeWorkoutWithProgress(defaultWorkout);
-    return loadSavedProgress(initialWorkout);
+    return initialWorkout; // Não carregar do localStorage na inicialização
   });
   const [isClient, setIsClient] = useState(false);
   
@@ -101,6 +106,10 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } catch (error) {
         console.error('Erro ao carregar workout:', error);
       }
+    } else {
+      // Se não há workout salvo, carregar progresso do workout padrão
+      const workoutWithProgress = loadSavedProgress(workout);
+      setWorkout(workoutWithProgress);
     }
     
     // Carregar timer se existir
@@ -207,6 +216,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const newWorkout = { ...prev };
       const exercise = newWorkout.days[dayIndex].exercises[exerciseIndex];
       
+      // Completar apenas UMA série por vez
       if (exercise.currentSet < exercise.sets) {
         exercise.currentSet += 1;
         
