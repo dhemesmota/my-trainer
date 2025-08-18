@@ -2,7 +2,7 @@
 
 import { defaultWorkout } from '@/data/default-workout';
 import { WorkoutWeek, WorkoutWeekWithProgress } from '@/types/workout';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 
 interface WorkoutContextType {
   workout: WorkoutWeekWithProgress;
@@ -90,6 +90,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Timer de descanso
   const [timerActive, setTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+
+  // Ref para controlar execuções duplas
+  const processingRef = useRef<Set<string>>(new Set());
 
   // Garantir que estamos no cliente antes de acessar localStorage
   useEffect(() => {
@@ -191,13 +194,13 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, [timerActive, timeLeft]);
 
-  const updateWorkout = (newWorkout: WorkoutWeek) => {
+  const updateWorkout = useCallback((newWorkout: WorkoutWeek) => {
     const workoutWithProgress = initializeWorkoutWithProgress(newWorkout);
     const workoutWithSavedProgress = loadSavedProgress(workoutWithProgress);
     setWorkout(workoutWithSavedProgress);
-  };
+  }, []);
 
-  const toggleExercise = (dayIndex: number, exerciseIndex: number) => {
+  const toggleExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
     setWorkout(prev => {
       const newWorkout = { ...prev };
       const exercise = newWorkout.days[dayIndex].exercises[exerciseIndex];
@@ -209,40 +212,57 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       
       return newWorkout;
     });
-  };
+  }, []);
 
-  const completeSet = (dayIndex: number, exerciseIndex: number) => {
+  const completeSet = useCallback((dayIndex: number, exerciseIndex: number) => {
+    const key = `${dayIndex}-${exerciseIndex}`;
+    
+    // Verificar se já está processando
+    if (processingRef.current.has(key)) {
+      console.log(`⏳ Já processando: ${key}`);
+      return;
+    }
+    
+    // Marcar como processando
+    processingRef.current.add(key);
+    
+    console.log(`🔄 completeSet chamado: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
+    
     setWorkout(prev => {
       const newWorkout = { ...prev };
       const exercise = newWorkout.days[dayIndex].exercises[exerciseIndex];
       
-      console.log(`Completando série: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
-      console.log(`Antes: ${exercise.currentSet}/${exercise.sets} séries`);
+      console.log(`📊 Antes: ${exercise.currentSet}/${exercise.sets} séries`);
       
       // Completar apenas UMA série por vez
       if (exercise.currentSet < exercise.sets) {
         exercise.currentSet += 1;
         
-        console.log(`Depois: ${exercise.currentSet}/${exercise.sets} séries`);
+        console.log(`📊 Depois: ${exercise.currentSet}/${exercise.sets} séries`);
         
         // Se completou todas as séries, marcar como completo
         if (exercise.currentSet === exercise.sets) {
           exercise.completed = true;
-          console.log(`Exercício completado!`);
+          console.log(`✅ Exercício completado!`);
           
           // Verificar se todos os exercícios do dia estão completos
           const allCompleted = newWorkout.days[dayIndex].exercises.every(ex => ex.completed);
           newWorkout.days[dayIndex].completed = allCompleted;
         }
       } else {
-        console.log(`Exercício já tem todas as séries completas!`);
+        console.log(`⚠️ Exercício já tem todas as séries completas!`);
       }
       
       return newWorkout;
     });
-  };
+    
+    // Remover do processamento após um delay
+    setTimeout(() => {
+      processingRef.current.delete(key);
+    }, 1000);
+  }, []);
 
-  const resetProgress = () => {
+  const resetProgress = useCallback(() => {
     const initialWorkout = initializeWorkoutWithProgress({
       week: workout.week,
       days: workout.days.map(day => ({
@@ -265,9 +285,12 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       localStorage.removeItem('workout-progress');
       localStorage.removeItem('workout-timer');
     }
-  };
+    
+    // Limpar processamento
+    processingRef.current.clear();
+  }, [workout.week, workout.days, isClient]);
 
-  const getProgress = () => {
+  const getProgress = useCallback(() => {
     const total = workout.days.reduce((acc, day) => acc + day.exercises.length, 0);
     const completed = workout.days.reduce((acc, day) => 
       acc + day.exercises.filter(ex => ex.completed).length, 0
@@ -277,22 +300,22 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       total,
       percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
     };
-  };
+  }, [workout.days]);
 
   // Funções do timer
-  const startTimer = (seconds: number) => {
+  const startTimer = useCallback((seconds: number) => {
     setTimeLeft(seconds);
     setTimerActive(true);
-  };
+  }, []);
 
-  const pauseTimer = () => {
+  const pauseTimer = useCallback(() => {
     setTimerActive(false);
-  };
+  }, []);
 
-  const resetTimer = () => {
+  const resetTimer = useCallback(() => {
     setTimerActive(false);
     setTimeLeft(0);
-  };
+  }, []);
 
   return (
     <WorkoutContext.Provider

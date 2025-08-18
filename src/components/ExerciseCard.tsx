@@ -18,19 +18,10 @@ interface ExerciseCardProps {
 
 export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, exerciseIndex }) => {
   const { toggleExercise, completeSet, restTimer } = useWorkout();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleCompleteSet = () => {
-    if (isProcessing) {
-      console.log(`⏳ Já processando, ignorando clique`);
-      return;
-    }
-    
     console.log(`🔄 handleCompleteSet chamado: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
     console.log(`📊 Estado atual: ${exercise.currentSet}/${exercise.sets} séries`);
-    
-    setIsProcessing(true);
     
     completeSet(dayIndex, exerciseIndex);
     
@@ -38,11 +29,6 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
     if (exercise.currentSet < exercise.sets - 1) {
       restTimer.startTimer(90);
     }
-    
-    // Reset do estado de processamento após um delay
-    setTimeout(() => {
-      setIsProcessing(false);
-    }, 500);
   };
 
   const progressPercentage = exercise.sets > 0 ? (exercise.currentSet / exercise.sets) * 100 : 0;
@@ -165,13 +151,13 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
           <div className="flex flex-wrap gap-2">
             <Button
               onClick={handleCompleteSet}
-              disabled={exercise.currentSet >= exercise.sets || isProcessing}
+              disabled={exercise.currentSet >= exercise.sets}
               variant="default"
               size="sm"
               className="flex items-center gap-2 flex-1 min-w-[120px]"
             >
               <CheckCircle className="h-4 w-4" />
-              {isProcessing ? 'Processando...' : 'Completar Série'}
+              Completar Série
             </Button>
             
             <Button
