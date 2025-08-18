@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useWorkout } from '@/contexts/WorkoutContext';
+import React, { useEffect, useState } from 'react';
 
 export const TestProgress: React.FC = () => {
   const { workout, completeSet, resetProgress } = useWorkout();
@@ -15,11 +15,11 @@ export const TestProgress: React.FC = () => {
   }, []);
 
   const handleTestProgress = () => {
-    // Simular progresso em alguns exercícios
-    completeSet(0, 0); // Dia 1, Exercício 1
-    completeSet(0, 0); // Segunda série
-    completeSet(0, 1); // Dia 1, Exercício 2
-    completeSet(1, 0); // Dia 2, Exercício 1
+    // Simular progresso em alguns exercícios - UMA série por vez
+    completeSet(0, 0); // Dia 1, Exercício 1 - Série 1
+    // completeSet(0, 0); // Dia 1, Exercício 1 - Série 2 (comentado para não pular)
+    completeSet(0, 1); // Dia 1, Exercício 2 - Série 1
+    completeSet(1, 0); // Dia 2, Exercício 1 - Série 1
   };
 
   const getProgressSummary = () => {
@@ -117,7 +117,7 @@ export const TestProgress: React.FC = () => {
               size="sm"
               className="w-full"
             >
-              Simular Progresso
+              Simular Progresso (1 série por exercício)
             </Button>
             <Button
               onClick={resetProgress}
@@ -131,6 +131,7 @@ export const TestProgress: React.FC = () => {
           
           <div className="text-xs text-yellow-700">
             <p>💡 Dica: Clique em "Simular Progresso", recarregue a página e veja se o progresso persiste!</p>
+            <p>💡 Teste: Clique em "Completar Série" nos exercícios - deve incrementar de 1 em 1!</p>
           </div>
         </div>
       </CardContent>

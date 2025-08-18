@@ -216,18 +216,26 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const newWorkout = { ...prev };
       const exercise = newWorkout.days[dayIndex].exercises[exerciseIndex];
       
+      console.log(`Completando série: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
+      console.log(`Antes: ${exercise.currentSet}/${exercise.sets} séries`);
+      
       // Completar apenas UMA série por vez
       if (exercise.currentSet < exercise.sets) {
         exercise.currentSet += 1;
         
+        console.log(`Depois: ${exercise.currentSet}/${exercise.sets} séries`);
+        
         // Se completou todas as séries, marcar como completo
         if (exercise.currentSet === exercise.sets) {
           exercise.completed = true;
+          console.log(`Exercício completado!`);
           
           // Verificar se todos os exercícios do dia estão completos
           const allCompleted = newWorkout.days[dayIndex].exercises.every(ex => ex.completed);
           newWorkout.days[dayIndex].completed = allCompleted;
         }
+      } else {
+        console.log(`Exercício já tem todas as séries completas!`);
       }
       
       return newWorkout;
