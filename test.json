@@ -1,0 +1,299 @@
+{
+  "week": 2,
+  "days": [
+      {
+          "day": 1,
+          "group": "Bíceps + Tríceps",
+          "exercises": [
+              {
+                  "name": "Rosca Direta Barra W",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Drop set na última série",
+                  "notes": "Cotovelos fixos",
+                  "alternatives": [
+                      "Rosca direta halteres",
+                      "Rosca direta polia"
+                  ]
+              },
+              {
+                  "name": "Rosca Alternada com Rotação",
+                  "sets": 3,
+                  "reps": "10–12",
+                  "technique": "Girar punho no topo",
+                  "notes": "Punho supinado",
+                  "alternatives": [
+                      "Rosca concentrada",
+                      "Rosca banco inclinado"
+                  ]
+              },
+              {
+                  "name": "Tríceps Testa Barra EZ",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Descida controlada",
+                  "notes": "Cotovelos fixos",
+                  "alternatives": [
+                      "Tríceps francês halter",
+                      "Tríceps corda polia"
+                  ]
+              },
+              {
+                  "name": "Mergulho em Banco",
+                  "sets": 3,
+                  "reps": "15",
+                  "technique": "Peso extra se possível",
+                  "notes": "Movimento controlado",
+                  "alternatives": [
+                      "Paralelas",
+                      "Tríceps kickback"
+                  ]
+              }
+          ]
+      },
+      {
+          "day": 2,
+          "group": "Peito + Ombros",
+          "exercises": [
+              {
+                  "name": "Supino Reto Barra",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Progressão semanal",
+                  "notes": "Pés firmes",
+                  "alternatives": [
+                      "Supino halteres",
+                      "Flexão peso nas costas"
+                  ]
+              },
+              {
+                  "name": "Supino Inclinado Halteres",
+                  "sets": 3,
+                  "reps": "10–12",
+                  "technique": "Controle descida",
+                  "notes": "Ângulo 30-45°",
+                  "alternatives": [
+                      "Supino inclinado barra",
+                      "Crucifixo inclinado"
+                  ]
+              },
+              {
+                  "name": "Crucifixo Máquina",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Alongamento máximo",
+                  "notes": "Evitar cotovelos fechados",
+                  "alternatives": [
+                      "Crucifixo halteres",
+                      "Crossover polia"
+                  ]
+              },
+              {
+                  "name": "Desenvolvimento Militar Barra",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Controle total",
+                  "notes": "Não descer além da linha dos ombros",
+                  "alternatives": [
+                      "Arnold press",
+                      "Desenvolvimento halteres"
+                  ]
+              },
+              {
+                  "name": "Elevação Lateral Halteres",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Controle total",
+                  "notes": "Cotovelo levemente flexionado",
+                  "alternatives": [
+                      "Elevação lateral polia",
+                      "Elevação frontal"
+                  ]
+              }
+          ]
+      },
+      {
+          "day": 3,
+          "group": "Costas + Antebraço",
+          "exercises": [
+              {
+                  "name": "Puxada Frente Barra Aberta",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Amplitude total",
+                  "notes": "Puxar até o peito",
+                  "alternatives": [
+                      "Barra fixa",
+                      "Puxada neutra"
+                  ]
+              },
+              {
+                  "name": "Remada Curvada Barra",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Costas firmes",
+                  "notes": "Evitar balanço",
+                  "alternatives": [
+                      "Remada baixa máquina",
+                      "Remada halteres"
+                  ]
+              },
+              {
+                  "name": "Pulldown Neutro Polia",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Controle total",
+                  "notes": "Sem balanço",
+                  "alternatives": [
+                      "Pulldown supinado",
+                      "Barra fixa neutra"
+                  ]
+              },
+              {
+                  "name": "Rosca Inversa Barra Reta",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Pegada pronada",
+                  "notes": "Controle total",
+                  "alternatives": [
+                      "Rosca martelo",
+                      "Rosca inversa halteres"
+                  ]
+              }
+          ]
+      },
+      {
+          "day": 4,
+          "group": "Pernas + Core",
+          "exercises": [
+              {
+                  "name": "Agachamento Livre",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Progressão semanal",
+                  "notes": "Core firme",
+                  "alternatives": [
+                      "Agachamento hack",
+                      "Agachamento smith"
+                  ]
+              },
+              {
+                  "name": "Leg Press",
+                  "sets": 3,
+                  "reps": "10–12",
+                  "technique": "Controle total",
+                  "notes": "Evitar travar joelhos",
+                  "alternatives": [
+                      "Avanço (lunge)",
+                      "Agachamento búlgaro"
+                  ]
+              },
+              {
+                  "name": "Cadeira Extensora",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Pausa no topo",
+                  "notes": "Sem balanço",
+                  "alternatives": [
+                      "Agachamento com pausa",
+                      "Step-up banco"
+                  ]
+              },
+              {
+                  "name": "Mesa Flexora",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Controle total",
+                  "notes": "Sem impulsos",
+                  "alternatives": [
+                      "Stiff halteres",
+                      "Glute ham raise"
+                  ]
+              },
+              {
+                  "name": "Panturrilha em Pé",
+                  "sets": 4,
+                  "reps": "15–20",
+                  "technique": "Amplitude máxima",
+                  "notes": "Pausa no topo",
+                  "alternatives": [
+                      "Panturrilha sentado",
+                      "Panturrilha unilateral"
+                  ]
+              },
+              {
+                  "name": "Prancha Abdominal",
+                  "sets": 3,
+                  "reps": "30–60s",
+                  "technique": "Core firme",
+                  "notes": "Sem elevar quadril",
+                  "alternatives": [
+                      "Ab wheel",
+                      "Dead bug"
+                  ]
+              }
+          ]
+      },
+      {
+          "day": 5,
+          "group": "Bíceps + Tríceps (Ênfase)",
+          "exercises": [
+              {
+                  "name": "Rosca Scott Barra W",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Pausa no topo",
+                  "notes": "Evitar estender demais",
+                  "alternatives": [
+                      "Rosca polia",
+                      "Rosca concentrada"
+                  ]
+              },
+              {
+                  "name": "Rosca Martelo Cruzado",
+                  "sets": 3,
+                  "reps": "10–12",
+                  "technique": "Tocar halteres no peito",
+                  "notes": "Controle total",
+                  "alternatives": [
+                      "Rosca martelo normal",
+                      "Rosca corda polia"
+                  ]
+              },
+              {
+                  "name": "Tríceps Francês Halter Unilateral",
+                  "sets": 4,
+                  "reps": "8–10",
+                  "technique": "Descida lenta",
+                  "notes": "Cotovelo fixo",
+                  "alternatives": [
+                      "Tríceps testa",
+                      "Tríceps corda polia"
+                  ]
+              },
+              {
+                  "name": "Tríceps Banco Pegada Fechada",
+                  "sets": 3,
+                  "reps": "10–12",
+                  "technique": "Controle total",
+                  "notes": "Evitar abrir cotovelos",
+                  "alternatives": [
+                      "Supino fechado",
+                      "Flexão pegada fechada"
+                  ]
+              },
+              {
+                  "name": "Tríceps Kickback",
+                  "sets": 3,
+                  "reps": "12–15",
+                  "technique": "Alongamento máximo",
+                  "notes": "Sem balanço",
+                  "alternatives": [
+                      "Extensão tríceps polia",
+                      "Tríceps francês corda"
+                  ]
+              }
+          ]
+      }
+  ]
+}
