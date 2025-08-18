@@ -39,10 +39,47 @@ const initializeWorkoutWithProgress = (workout: WorkoutWeek): WorkoutWeekWithPro
   };
 };
 
+// Função para carregar progresso salvo
+const loadSavedProgress = (workout: WorkoutWeekWithProgress): WorkoutWeekWithProgress => {
+  try {
+    const savedProgress = localStorage.getItem('workout-progress');
+    if (savedProgress) {
+      const progress = JSON.parse(savedProgress);
+      
+      // Aplicar progresso salvo ao workout
+      const updatedWorkout = { ...workout };
+      
+      progress.days.forEach((savedDay: any) => {
+        const dayIndex = updatedWorkout.days.findIndex(day => day.day === savedDay.day);
+        if (dayIndex !== -1) {
+          updatedWorkout.days[dayIndex].completed = savedDay.completed;
+          
+          savedDay.exercises.forEach((savedExercise: any) => {
+            const exerciseIndex = updatedWorkout.days[dayIndex].exercises.findIndex(
+              ex => ex.name === savedExercise.name
+            );
+            if (exerciseIndex !== -1) {
+              updatedWorkout.days[dayIndex].exercises[exerciseIndex].completed = savedExercise.completed;
+              updatedWorkout.days[dayIndex].exercises[exerciseIndex].currentSet = savedExercise.currentSet;
+            }
+          });
+        }
+      });
+      
+      return updatedWorkout;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar progresso:', error);
+  }
+  
+  return workout;
+};
+
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [workout, setWorkout] = useState<WorkoutWeekWithProgress>(() => 
-    initializeWorkoutWithProgress(defaultWorkout)
-  );
+  const [workout, setWorkout] = useState<WorkoutWeekWithProgress>(() => {
+    const initialWorkout = initializeWorkoutWithProgress(defaultWorkout);
+    return loadSavedProgress(initialWorkout);
+  });
   const [isClient, setIsClient] = useState(false);
   
   // Timer de descanso
@@ -52,13 +89,29 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Garantir que estamos no cliente antes de acessar localStorage
   useEffect(() => {
     setIsClient(true);
-    const saved = localStorage.getItem('workout-data');
-    if (saved) {
+    
+    // Carregar dados do workout se existirem
+    const savedWorkout = localStorage.getItem('workout-data');
+    if (savedWorkout) {
       try {
-        const parsed = JSON.parse(saved);
-        setWorkout(initializeWorkoutWithProgress(parsed));
-      } catch {
-        // Se houver erro, mantém o default
+        const parsed = JSON.parse(savedWorkout);
+        const newWorkout = initializeWorkoutWithProgress(parsed);
+        const workoutWithProgress = loadSavedProgress(newWorkout);
+        setWorkout(workoutWithProgress);
+      } catch (error) {
+        console.error('Erro ao carregar workout:', error);
+      }
+    }
+    
+    // Carregar timer se existir
+    const savedTimer = localStorage.getItem('workout-timer');
+    if (savedTimer) {
+      try {
+        const timer = JSON.parse(savedTimer);
+        setTimeLeft(timer.timeLeft || 0);
+        setTimerActive(timer.isActive || false);
+      } catch (error) {
+        console.error('Erro ao carregar timer:', error);
       }
     }
   }, []);
@@ -66,6 +119,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Salvar dados no localStorage sempre que houver mudanças
   useEffect(() => {
     if (isClient) {
+      // Salvar dados do workout
       localStorage.setItem('workout-data', JSON.stringify({
         week: workout.week,
         days: workout.days.map(day => ({
@@ -82,7 +136,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         })),
       }));
       
-      // Salvar progresso separadamente
+      // Salvar progresso detalhado
       localStorage.setItem('workout-progress', JSON.stringify({
         days: workout.days.map(day => ({
           day: day.day,
@@ -96,6 +150,16 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }));
     }
   }, [workout, isClient]);
+
+  // Salvar timer no localStorage
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem('workout-timer', JSON.stringify({
+        isActive: timerActive,
+        timeLeft: timeLeft,
+      }));
+    }
+  }, [timerActive, timeLeft, isClient]);
 
   // Timer de descanso
   useEffect(() => {
@@ -119,7 +183,9 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [timerActive, timeLeft]);
 
   const updateWorkout = (newWorkout: WorkoutWeek) => {
-    setWorkout(initializeWorkoutWithProgress(newWorkout));
+    const workoutWithProgress = initializeWorkoutWithProgress(newWorkout);
+    const workoutWithSavedProgress = loadSavedProgress(workoutWithProgress);
+    setWorkout(workoutWithSavedProgress);
   };
 
   const toggleExercise = (dayIndex: number, exerciseIndex: number) => {
@@ -159,7 +225,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const resetProgress = () => {
-    setWorkout(initializeWorkoutWithProgress({
+    const initialWorkout = initializeWorkoutWithProgress({
       week: workout.week,
       days: workout.days.map(day => ({
         day: day.day,
@@ -173,7 +239,14 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
           alternatives: exercise.alternatives,
         })),
       })),
-    }));
+    });
+    setWorkout(initialWorkout);
+    
+    // Limpar progresso do localStorage
+    if (isClient) {
+      localStorage.removeItem('workout-progress');
+      localStorage.removeItem('workout-timer');
+    }
   };
 
   const getProgress = () => {

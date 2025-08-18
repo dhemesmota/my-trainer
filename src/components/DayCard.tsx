@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { ChevronDown, ChevronUp, Dumbbell, Target } from 'lucide-react';
 import { DayWithProgress } from '@/types/workout';
+import { ChevronDown, ChevronUp, Dumbbell, Target } from 'lucide-react';
+import React, { useState } from 'react';
 import { ExerciseCard } from './ExerciseCard';
 
 interface DayCardProps {

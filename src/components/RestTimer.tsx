@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 import { useWorkout } from '@/contexts/WorkoutContext';
+import { Pause, Play, RotateCcw, Timer } from 'lucide-react';
+import React from 'react';
 
 export const RestTimer: React.FC = () => {
   const { restTimer } = useWorkout();

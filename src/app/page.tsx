@@ -1,24 +1,24 @@
 'use client';
 
-import React from 'react';
-import { WorkoutProvider, useWorkout } from '@/contexts/WorkoutContext';
 import { DayCard } from '@/components/DayCard';
-import { UploadWorkout } from '@/components/UploadWorkout';
 import { RestTimer } from '@/components/RestTimer';
+import { UploadWorkout } from '@/components/UploadWorkout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Dumbbell, 
-  Calendar, 
-  Target, 
-  Trophy, 
+import { WorkoutProvider, useWorkout } from '@/contexts/WorkoutContext';
+import {
+  Activity,
+  Calendar,
+  Dumbbell,
   RefreshCw,
+  Target,
   TrendingUp,
-  Users,
-  Activity
+  Trophy,
+  Users
 } from 'lucide-react';
+import React from 'react';
 
 const DashboardContent: React.FC = () => {
   const { workout, getProgress, resetProgress } = useWorkout();

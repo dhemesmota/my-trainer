@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { CheckCircle, Circle, Info, Play, Timer } from 'lucide-react';
-import { ExerciseWithProgress } from '@/types/workout';
 import { useWorkout } from '@/contexts/WorkoutContext';
+import { ExerciseWithProgress } from '@/types/workout';
+import { CheckCircle, Circle, Info, Timer, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
 
 interface ExerciseCardProps {
   exercise: ExerciseWithProgress;
@@ -36,10 +36,10 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <CardTitle className="text-base sm:text-lg font-semibold text-gray-900 flex items-start gap-2">
               <button
                 onClick={() => toggleExercise(dayIndex, exerciseIndex)}
-                className="flex-shrink-0"
+                className="flex-shrink-0 mt-0.5"
               >
                 {exercise.completed ? (
                   <CheckCircle className="h-5 w-5 text-green-600" />
@@ -47,7 +47,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
                   <Circle className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                 )}
               </button>
-              <span className="truncate">{exercise.name}</span>
+              <span className="break-words leading-tight">{exercise.name}</span>
             </CardTitle>
             <div className="flex flex-wrap items-center gap-2 mt-2">
               <Badge variant="secondary" className="text-xs">
@@ -62,6 +62,24 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
                 </Badge>
               )}
             </div>
+            
+            {/* Exercícios Alternativos */}
+            {exercise.alternatives && exercise.alternatives.length > 0 && (
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <ArrowRight className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">Alternativas:</span>
+                </div>
+                <div className="space-y-1">
+                  {exercise.alternatives.map((alt, index) => (
+                    <div key={index} className="text-xs text-blue-700 flex items-center gap-2">
+                      <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
+                      <span className="break-words">{alt}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -71,9 +89,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
                   <Info className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>{exercise.name}</DialogTitle>
+                  <DialogTitle className="break-words">{exercise.name}</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
@@ -88,18 +106,23 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
                   {exercise.notes && (
                     <div>
                       <h4 className="font-semibold text-sm text-gray-700 mb-2">Notas:</h4>
-                      <p className="text-sm text-gray-600">{exercise.notes}</p>
+                      <p className="text-sm text-gray-600 break-words">{exercise.notes}</p>
                     </div>
                   )}
                   
                   {exercise.alternatives && exercise.alternatives.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Alternativas:</h4>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        {exercise.alternatives.map((alt, index) => (
-                          <li key={index}>• {alt}</li>
-                        ))}
-                      </ul>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Exercícios Alternativos:</h4>
+                      <div className="bg-blue-50 p-3 rounded-lg">
+                        <ul className="text-sm text-gray-600 space-y-2">
+                          {exercise.alternatives.map((alt, index) => (
+                            <li key={index} className="flex items-start gap-2">
+                              <ArrowRight className="h-3 w-3 mt-1 text-blue-600 flex-shrink-0" />
+                              <span className="break-words">{alt}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
