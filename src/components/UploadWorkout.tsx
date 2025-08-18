@@ -176,7 +176,7 @@ export const UploadWorkout: React.FC = () => {
               <Info className="h-4 w-4 mt-0.5 text-blue-600" />
               <div className="text-sm text-blue-800">
                 <p className="font-medium mb-1">Formato do arquivo JSON:</p>
-                <p>O arquivo deve conter "week" (número) e "days" (array de dias com exercícios).</p>
+                <p>O arquivo deve conter &quot;week&quot; (número) e &quot;days&quot; (array de dias com exercícios).</p>
               </div>
             </div>
           </div>

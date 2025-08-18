@@ -130,8 +130,8 @@ export const TestProgress: React.FC = () => {
           </div>
           
           <div className="text-xs text-yellow-700">
-            <p>💡 Dica: Clique em "Simular Progresso", recarregue a página e veja se o progresso persiste!</p>
-            <p>💡 Teste: Clique em "Completar Série" nos exercícios - deve incrementar de 1 em 1!</p>
+            <p>💡 Dica: Clique em &quot;Simular Progresso&quot;, recarregue a página e veja se o progresso persiste!</p>
+            <p>💡 Teste: Clique em &quot;Completar Série&quot; nos exercícios - deve incrementar de 1 em 1!</p>
           </div>
         </div>
       </CardContent>

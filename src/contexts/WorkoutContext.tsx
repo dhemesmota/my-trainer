@@ -4,6 +4,23 @@ import { defaultWorkout } from '@/data/default-workout';
 import { WorkoutWeek, WorkoutWeekWithProgress } from '@/types/workout';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
+// Tipos para o progresso salvo
+interface SavedExercise {
+  name: string;
+  completed: boolean;
+  currentSet: number;
+}
+
+interface SavedDay {
+  day: number;
+  completed: boolean;
+  exercises: SavedExercise[];
+}
+
+interface SavedProgress {
+  days: SavedDay[];
+}
+
 interface WorkoutContextType {
   workout: WorkoutWeekWithProgress;
   updateWorkout: (newWorkout: WorkoutWeek) => void;
@@ -49,17 +66,17 @@ const loadSavedProgress = (workout: WorkoutWeekWithProgress): WorkoutWeekWithPro
   try {
     const savedProgress = localStorage.getItem('workout-progress');
     if (savedProgress) {
-      const progress = JSON.parse(savedProgress);
+      const progress = JSON.parse(savedProgress) as SavedProgress;
       
       // Aplicar progresso salvo ao workout
       const updatedWorkout = { ...workout };
       
-      progress.days.forEach((savedDay: any) => {
+      progress.days.forEach((savedDay: SavedDay) => {
         const dayIndex = updatedWorkout.days.findIndex(day => day.day === savedDay.day);
         if (dayIndex !== -1) {
           updatedWorkout.days[dayIndex].completed = savedDay.completed;
           
-          savedDay.exercises.forEach((savedExercise: any) => {
+          savedDay.exercises.forEach((savedExercise: SavedExercise) => {
             const exerciseIndex = updatedWorkout.days[dayIndex].exercises.findIndex(
               ex => ex.name === savedExercise.name
             );
@@ -126,7 +143,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.error('Erro ao carregar timer:', error);
       }
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Salvar dados no localStorage sempre que houver mudanças
   useEffect(() => {
