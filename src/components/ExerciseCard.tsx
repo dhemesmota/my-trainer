@@ -7,8 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Progress } from '@/components/ui/progress';
 import { useWorkout } from '@/contexts/WorkoutContext';
 import { ExerciseWithProgress } from '@/types/workout';
-import { CheckCircle, Circle, Info, Timer, ArrowRight } from 'lucide-react';
-import React, { useState } from 'react';
+import { ArrowRight, CheckCircle, Circle, Info, Timer } from 'lucide-react';
+import React from 'react';
 
 interface ExerciseCardProps {
   exercise: ExerciseWithProgress;

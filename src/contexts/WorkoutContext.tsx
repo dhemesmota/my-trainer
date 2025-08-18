@@ -2,7 +2,7 @@
 
 import { defaultWorkout } from '@/data/default-workout';
 import { WorkoutWeek, WorkoutWeekWithProgress } from '@/types/workout';
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 interface WorkoutContextType {
   workout: WorkoutWeekWithProgress;
