@@ -2,6 +2,7 @@
 
 import { DayCard } from '@/components/DayCard';
 import { RestTimer } from '@/components/RestTimer';
+import { TestProgress } from '@/components/TestProgress';
 import { UploadWorkout } from '@/components/UploadWorkout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -69,6 +70,9 @@ const DashboardContent: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Timer de Descanso */}
         <RestTimer />
+
+        {/* Teste de Persistência */}
+        <TestProgress />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
