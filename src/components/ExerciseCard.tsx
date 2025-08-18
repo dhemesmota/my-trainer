@@ -1,176 +1,160 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
+import { CheckCircle, Circle, Info, Play, Timer } from 'lucide-react';
 import { ExerciseWithProgress } from '@/types/workout';
-import {
-    ArrowRight,
-    CheckCircle,
-    Circle,
-    Dumbbell,
-    Info,
-    Lightbulb,
-    Play,
-    Target,
-    Timer
-} from 'lucide-react';
-import React, { useState } from 'react';
+import { useWorkout } from '@/contexts/WorkoutContext';
 
 interface ExerciseCardProps {
   exercise: ExerciseWithProgress;
-  onToggle: () => void;
-  onCompleteSet: () => void;
   dayIndex: number;
   exerciseIndex: number;
 }
 
-export const ExerciseCard: React.FC<ExerciseCardProps> = ({
-  exercise,
-  onToggle,
-  onCompleteSet,
-  dayIndex,
-  exerciseIndex,
-}) => {
-  const [showDetails, setShowDetails] = useState(false);
+export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, exerciseIndex }) => {
+  const { toggleExercise, completeSet, restTimer } = useWorkout();
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  const progressPercentage = (exercise.currentSet / exercise.sets) * 100;
+  const handleCompleteSet = () => {
+    completeSet(dayIndex, exerciseIndex);
+    
+    // Iniciar timer de descanso de 90 segundos após completar uma série
+    if (exercise.currentSet < exercise.sets - 1) {
+      restTimer.startTimer(90);
+    }
+  };
+
+  const progressPercentage = exercise.sets > 0 ? (exercise.currentSet / exercise.sets) * 100 : 0;
 
   return (
-    <Card className={`transition-all duration-300 hover:shadow-lg ${
-      exercise.completed ? 'bg-green-50 border-green-200' : 'bg-white'
-    }`}>
+    <Card className={`transition-all duration-200 ${exercise.completed ? 'bg-green-50 border-green-200' : 'bg-white'}`}>
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              {exercise.completed ? (
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              ) : (
-                <Circle className="h-5 w-5 text-gray-400" />
-              )}
-              {exercise.name}
+              <button
+                onClick={() => toggleExercise(dayIndex, exerciseIndex)}
+                className="flex-shrink-0"
+              >
+                {exercise.completed ? (
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                ) : (
+                  <Circle className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                )}
+              </button>
+              <span className="truncate">{exercise.name}</span>
             </CardTitle>
-            <div className="flex items-center gap-4 mt-2">
-              <Badge variant="secondary" className="flex items-center gap-1">
-                <Dumbbell className="h-3 w-3" />
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+              <Badge variant="secondary" className="text-xs">
                 {exercise.sets} séries
               </Badge>
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Target className="h-3 w-3" />
-                {exercise.reps} reps
+              <Badge variant="outline" className="text-xs">
+                {exercise.reps}
               </Badge>
+              {exercise.technique && (
+                <Badge variant="outline" className="text-xs">
+                  {exercise.technique}
+                </Badge>
+              )}
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowDetails(true)}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <Info className="h-4 w-4" />
-          </Button>
+          
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{exercise.name}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-sm text-gray-700 mb-2">Detalhes:</h4>
+                    <div className="space-y-2 text-sm">
+                      <div><strong>Séries:</strong> {exercise.sets}</div>
+                      <div><strong>Repetições:</strong> {exercise.reps}</div>
+                      <div><strong>Técnica:</strong> {exercise.technique}</div>
+                    </div>
+                  </div>
+                  
+                  {exercise.notes && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Notas:</h4>
+                      <p className="text-sm text-gray-600">{exercise.notes}</p>
+                    </div>
+                  )}
+                  
+                  {exercise.alternatives && exercise.alternatives.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Alternativas:</h4>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        {exercise.alternatives.map((alt, index) => (
+                          <li key={index}>• {alt}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </CardHeader>
 
       <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">Progresso das séries</span>
-            <span className="text-sm font-medium text-gray-900">
-              {exercise.currentSet}/{exercise.sets}
-            </span>
+        <div className="space-y-4">
+          {/* Progresso das séries */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Progresso: {exercise.currentSet}/{exercise.sets} séries
+              </span>
+              <span className="text-sm text-gray-500">{Math.round(progressPercentage)}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2" />
           </div>
-          
-          <Progress value={progressPercentage} className="h-2" />
-          
-          <div className="flex gap-2">
+
+          {/* Botões de controle */}
+          <div className="flex flex-wrap gap-2">
             <Button
-              onClick={onCompleteSet}
+              onClick={handleCompleteSet}
               disabled={exercise.currentSet >= exercise.sets}
-              className="flex-1"
+              variant="default"
               size="sm"
+              className="flex items-center gap-2 flex-1 min-w-[120px]"
             >
-              <Play className="h-4 w-4 mr-1" />
+              <CheckCircle className="h-4 w-4" />
               Completar Série
             </Button>
             
             <Button
-              onClick={onToggle}
-              variant={exercise.completed ? "outline" : "default"}
+              onClick={() => restTimer.startTimer(90)}
+              variant="outline"
               size="sm"
-              className="flex items-center gap-1"
+              className="flex items-center gap-2"
             >
-              {exercise.completed ? "Desmarcar" : "Completar"}
+              <Timer className="h-4 w-4" />
+              Descanso
             </Button>
           </div>
+
+          {/* Status do exercício */}
+          {exercise.completed && (
+            <div className="flex items-center gap-2 text-green-600 text-sm">
+              <CheckCircle className="h-4 w-4" />
+              <span>Exercício completado!</span>
+            </div>
+          )}
         </div>
       </CardContent>
-
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Dumbbell className="h-5 w-5" />
-              {exercise.name}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
-                  <Timer className="h-4 w-4" />
-                  Séries
-                </div>
-                <p className="text-lg font-semibold">{exercise.sets}</p>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
-                  <Target className="h-4 w-4" />
-                  Repetições
-                </div>
-                <p className="text-lg font-semibold">{exercise.reps}</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-start gap-2">
-                <Play className="h-4 w-4 mt-0.5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Técnica</p>
-                  <p className="text-sm text-gray-600">{exercise.technique}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 mt-0.5 text-orange-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Observações</p>
-                  <p className="text-sm text-gray-600">{exercise.notes}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-4 w-4 text-yellow-600" />
-                <p className="text-sm font-medium text-gray-700">Alternativas</p>
-              </div>
-              <div className="space-y-1">
-                {exercise.alternatives.map((alternative, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                    <ArrowRight className="h-3 w-3" />
-                    {alternative}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Card>
   );
 };

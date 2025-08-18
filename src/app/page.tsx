@@ -1,23 +1,24 @@
 'use client';
 
+import React from 'react';
+import { WorkoutProvider, useWorkout } from '@/contexts/WorkoutContext';
 import { DayCard } from '@/components/DayCard';
 import { UploadWorkout } from '@/components/UploadWorkout';
+import { RestTimer } from '@/components/RestTimer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { WorkoutProvider, useWorkout } from '@/contexts/WorkoutContext';
-import {
-  Activity,
-  Calendar,
-  Dumbbell,
+import { 
+  Dumbbell, 
+  Calendar, 
+  Target, 
+  Trophy, 
   RefreshCw,
-  Target,
   TrendingUp,
-  Trophy,
-  Users
+  Users,
+  Activity
 } from 'lucide-react';
-import React from 'react';
 
 const DashboardContent: React.FC = () => {
   const { workout, getProgress, resetProgress } = useWorkout();
@@ -35,19 +36,19 @@ const DashboardContent: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <Dumbbell className="h-8 w-8 text-blue-600" />
+                <Dumbbell className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">My Trainer</h1>
-                <p className="text-sm text-gray-600">Acompanhe seus treinos da semana</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Trainer</h1>
+                <p className="text-xs sm:text-sm text-gray-600">Acompanhe seus treinos da semana</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
               <UploadWorkout />
               <Button
                 onClick={resetProgress}
@@ -56,7 +57,8 @@ const DashboardContent: React.FC = () => {
                 className="flex items-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Resetar Progresso
+                <span className="hidden sm:inline">Resetar Progresso</span>
+                <span className="sm:hidden">Resetar</span>
               </Button>
             </div>
           </div>
@@ -64,9 +66,12 @@ const DashboardContent: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Timer de Descanso */}
+        <RestTimer />
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Semana Atual</CardTitle>
@@ -116,7 +121,7 @@ const DashboardContent: React.FC = () => {
         </div>
 
         {/* Progress Overview */}
-        <Card className="mb-8">
+        <Card className="mb-6 sm:mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
@@ -124,7 +129,7 @@ const DashboardContent: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
               {workout.days.map((day, index) => {
                 const dayProgress = day.exercises.filter(ex => ex.completed).length;
                 const dayTotal = day.exercises.length;
@@ -132,9 +137,9 @@ const DashboardContent: React.FC = () => {
                 
                 return (
                   <div key={index} className="text-center">
-                    <div className="text-lg font-semibold text-gray-900">Dia {day.day}</div>
-                    <div className="text-sm text-gray-600 mb-2">{day.group}</div>
-                    <div className="text-2xl font-bold text-blue-600">{Math.round(dayPercentage)}%</div>
+                    <div className="text-base sm:text-lg font-semibold text-gray-900">Dia {day.day}</div>
+                    <div className="text-xs sm:text-sm text-gray-600 mb-2">{day.group}</div>
+                    <div className="text-xl sm:text-2xl font-bold text-blue-600">{Math.round(dayPercentage)}%</div>
                     <div className="text-xs text-gray-500">{dayProgress}/{dayTotal} exercícios</div>
                     <Progress value={dayPercentage} className="mt-2 h-2" />
                   </div>
@@ -145,10 +150,10 @@ const DashboardContent: React.FC = () => {
         </Card>
 
         {/* Workout Days */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Seus Treinos da Semana</h2>
-            <Badge variant="outline" className="flex items-center gap-1">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900">Seus Treinos da Semana</h2>
+            <Badge variant="outline" className="flex items-center gap-1 w-fit">
               <Trophy className="h-3 w-3" />
               {progress.completed} de {progress.total} completados
             </Badge>
@@ -161,9 +166,9 @@ const DashboardContent: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-sm text-gray-600">
+      <footer className="bg-white border-t mt-8 sm:mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="text-center text-xs sm:text-sm text-gray-600">
             <p>My Trainer - Acompanhe seus treinos com facilidade 💪</p>
             <p className="mt-1">Desenvolvido com Next.js, TypeScript e Tailwind CSS</p>
           </div>
