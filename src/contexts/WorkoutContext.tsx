@@ -59,9 +59,6 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Timer de descanso
   const [timerActive, setTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  
-  // Ref para evitar execuções duplas
-  const isProcessingRef = React.useRef(false);
 
   // Garantir que estamos no cliente e depois carregar dados
   useEffect(() => {
@@ -211,17 +208,11 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [user, isClient, saveWorkoutToSupabase]);
 
   const completeSet = useCallback((dayIndex: number, exerciseIndex: number) => {
-    // Proteção contra execuções duplas
-    if (isProcessingRef.current) {
-      console.log(`⚠️ completeSet já está sendo executado, ignorando...`);
-      return;
-    }
-    
-    isProcessingRef.current = true;
     console.log(`🔄 completeSet chamado: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
     
     setWorkout(prev => {
-      const newWorkout = { ...prev };
+      // Criar uma cópia profunda do workout para evitar mutações
+      const newWorkout = JSON.parse(JSON.stringify(prev));
       const exercise = newWorkout.days[dayIndex].exercises[exerciseIndex];
       
       console.log(`📊 Antes: ${exercise.currentSet}/${exercise.sets} séries`);
@@ -250,11 +241,6 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       } else {
         console.log(`⚠️ Exercício já tem todas as séries completas!`);
       }
-      
-      // Liberar a proteção após a atualização
-      setTimeout(() => {
-        isProcessingRef.current = false;
-      }, 100);
       
       return newWorkout;
     });

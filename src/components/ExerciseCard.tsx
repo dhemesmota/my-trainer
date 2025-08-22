@@ -23,25 +23,38 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({ exercise, dayIndex, 
   const { toggleExercise, completeSet, restTimer } = useWorkout();
   const { getExerciseProgress } = useWeight();
   const [showWeightModal, setShowWeightModal] = useState(false);
+  const isProcessingRef = React.useRef(false);
   
   const weightProgress = getExerciseProgress(exercise.name);
 
   const handleCompleteSet = () => {
+    // Proteção contra cliques duplos
+    if (isProcessingRef.current) {
+      console.log(`⚠️ handleCompleteSet já está sendo processado, ignorando...`);
+      return;
+    }
+    
+    isProcessingRef.current = true;
+    
     console.log(`🔄 handleCompleteSet chamado: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
     console.log(`📊 Estado atual: ${exercise.currentSet}/${exercise.sets} séries`);
     
     // Verificar se ainda há séries para completar
     if (exercise.currentSet < exercise.sets) {
-      const nextSet = exercise.currentSet + 1;
-      
       // Completar a série (salvamento automático já incluído no contexto)
       completeSet(dayIndex, exerciseIndex);
       
       // Iniciar timer de descanso se não for a última série
+      const nextSet = exercise.currentSet + 1;
       if (nextSet < exercise.sets) {
         restTimer.startTimer(90);
       }
     }
+    
+    // Liberar a proteção após um pequeno delay
+    setTimeout(() => {
+      isProcessingRef.current = false;
+    }, 500);
   };
 
   const progressPercentage = exercise.sets > 0 ? (exercise.currentSet / exercise.sets) * 100 : 0;
