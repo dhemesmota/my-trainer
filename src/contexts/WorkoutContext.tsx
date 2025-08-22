@@ -2,24 +2,12 @@
 
 import { defaultWorkout } from '@/data/default-workout';
 import { WorkoutWeek, WorkoutWeekWithProgress } from '@/types/workout';
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-// Tipos para o progresso salvo
-interface SavedExercise {
-  name: string;
-  completed: boolean;
-  currentSet: number;
-}
+import { createClient } from '@/lib/supabase';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
 
-interface SavedDay {
-  day: number;
-  completed: boolean;
-  exercises: SavedExercise[];
-}
-
-interface SavedProgress {
-  days: SavedDay[];
-}
+// Tipos removidos - agora usamos apenas Supabase
 
 interface WorkoutContextType {
   workout: WorkoutWeekWithProgress;
@@ -28,6 +16,7 @@ interface WorkoutContextType {
   completeSet: (dayIndex: number, exerciseIndex: number) => void;
   resetProgress: () => void;
   getProgress: () => { completed: number; total: number; percentage: number };
+  saveWorkout: () => void; // Função para salvar manualmente
   // Timer de descanso
   restTimer: {
     isActive: boolean;
@@ -56,83 +45,29 @@ const initializeWorkoutWithProgress = (workout: WorkoutWeek): WorkoutWeekWithPro
   };
 };
 
-// Função para carregar progresso salvo (apenas no cliente)
-const loadSavedProgress = (workout: WorkoutWeekWithProgress): WorkoutWeekWithProgress => {
-  // Verificar se estamos no cliente
-  if (typeof window === 'undefined') {
-    return workout;
-  }
-
-  try {
-    const savedProgress = localStorage.getItem('workout-progress');
-    if (savedProgress) {
-      const progress = JSON.parse(savedProgress) as SavedProgress;
-      
-      // Aplicar progresso salvo ao workout
-      const updatedWorkout = { ...workout };
-      
-      progress.days.forEach((savedDay: SavedDay) => {
-        const dayIndex = updatedWorkout.days.findIndex(day => day.day === savedDay.day);
-        if (dayIndex !== -1) {
-          updatedWorkout.days[dayIndex].completed = savedDay.completed;
-          
-          savedDay.exercises.forEach((savedExercise: SavedExercise) => {
-            const exerciseIndex = updatedWorkout.days[dayIndex].exercises.findIndex(
-              ex => ex.name === savedExercise.name
-            );
-            if (exerciseIndex !== -1) {
-              updatedWorkout.days[dayIndex].exercises[exerciseIndex].completed = savedExercise.completed;
-              updatedWorkout.days[dayIndex].exercises[exerciseIndex].currentSet = savedExercise.currentSet;
-            }
-          });
-        }
-      });
-      
-      return updatedWorkout;
-    }
-  } catch (error) {
-    console.error('Erro ao carregar progresso:', error);
-  }
-  
-  return workout;
-};
+// Função removida - agora usamos apenas Supabase
 
 export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [workout, setWorkout] = useState<WorkoutWeekWithProgress>(() => {
     const initialWorkout = initializeWorkoutWithProgress(defaultWorkout);
-    return initialWorkout; // Não carregar do localStorage na inicialização
+    return initialWorkout;
   });
   const [isClient, setIsClient] = useState(false);
+  const { user } = useAuth();
+  const supabase = createClient();
   
   // Timer de descanso
   const [timerActive, setTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  
+  // Ref para evitar execuções duplas
+  const isProcessingRef = React.useRef(false);
 
-  // Ref para controlar execuções duplas
-  const processingRef = useRef<Set<string>>(new Set());
-
-  // Garantir que estamos no cliente antes de acessar localStorage
+  // Garantir que estamos no cliente e depois carregar dados
   useEffect(() => {
     setIsClient(true);
     
-    // Carregar dados do workout se existirem
-    const savedWorkout = localStorage.getItem('workout-data');
-    if (savedWorkout) {
-      try {
-        const parsed = JSON.parse(savedWorkout);
-        const newWorkout = initializeWorkoutWithProgress(parsed);
-        const workoutWithProgress = loadSavedProgress(newWorkout);
-        setWorkout(workoutWithProgress);
-      } catch (error) {
-        console.error('Erro ao carregar workout:', error);
-      }
-    } else {
-      // Se não há workout salvo, carregar progresso do workout padrão
-      const workoutWithProgress = loadSavedProgress(workout);
-      setWorkout(workoutWithProgress);
-    }
-    
-    // Carregar timer se existir
+    // Carregar timer se existir (apenas o timer permanece no localStorage)
     const savedTimer = localStorage.getItem('workout-timer');
     if (savedTimer) {
       try {
@@ -143,42 +78,17 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.error('Erro ao carregar timer:', error);
       }
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Salvar dados no localStorage sempre que houver mudanças
+  // Carregar workout do Supabase quando usuário estiver logado E cliente estiver pronto
   useEffect(() => {
-    if (isClient) {
-      // Salvar dados do workout
-      localStorage.setItem('workout-data', JSON.stringify({
-        week: workout.week,
-        days: workout.days.map(day => ({
-          day: day.day,
-          group: day.group,
-          exercises: day.exercises.map(exercise => ({
-            name: exercise.name,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            technique: exercise.technique,
-            notes: exercise.notes,
-            alternatives: exercise.alternatives,
-          })),
-        })),
-      }));
-      
-      // Salvar progresso detalhado
-      localStorage.setItem('workout-progress', JSON.stringify({
-        days: workout.days.map(day => ({
-          day: day.day,
-          completed: day.completed,
-          exercises: day.exercises.map(exercise => ({
-            name: exercise.name,
-            completed: exercise.completed,
-            currentSet: exercise.currentSet,
-          })),
-        })),
-      }));
+    if (user && isClient) {
+      loadWorkoutFromSupabase();
     }
-  }, [workout, isClient]);
+  }, [user, isClient]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Removi o salvamento automático para evitar loops e execuções duplas
+  // O salvamento agora é feito apenas nas funções específicas (toggleExercise, completeSet, etc.)
 
   // Salvar timer no localStorage
   useEffect(() => {
@@ -211,11 +121,75 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
   }, [timerActive, timeLeft]);
 
+  const loadWorkoutFromSupabase = async () => {
+    if (!user || !isClient) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_workouts')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('week', defaultWorkout.week)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Erro ao carregar workout:', error);
+        return;
+      }
+
+      if (data && data.workout_data) {
+        // Carregar workout do Supabase com progresso
+        console.log('📊 Carregando workout do Supabase:', data.workout_data);
+        setWorkout(data.workout_data);
+      } else {
+        // Se não há workout salvo, criar um novo com base no padrão
+        console.log('📊 Criando novo workout baseado no padrão');
+        const initialWorkout = initializeWorkoutWithProgress(defaultWorkout);
+        setWorkout(initialWorkout);
+        
+        // Salvar o workout inicial no Supabase
+        await saveWorkoutToSupabase(initialWorkout);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar workout do Supabase:', error);
+      // Em caso de erro, usar o workout padrão
+      const initialWorkout = initializeWorkoutWithProgress(defaultWorkout);
+      setWorkout(initialWorkout);
+    }
+  };
+
+  const saveWorkoutToSupabase = useCallback(async (workoutData: WorkoutWeekWithProgress) => {
+    if (!user || !isClient) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_workouts')
+        .upsert({
+          user_id: user.id,
+          week: workoutData.week,
+          workout_data: workoutData,
+        }, {
+          onConflict: 'user_id,week'
+        });
+
+      if (error) {
+        console.error('Erro ao salvar workout:', error);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar workout no Supabase:', error);
+    }
+  }, [user, supabase, isClient]);
+
   const updateWorkout = useCallback((newWorkout: WorkoutWeek) => {
+    // Criar workout com progresso inicial zerado
     const workoutWithProgress = initializeWorkoutWithProgress(newWorkout);
-    const workoutWithSavedProgress = loadSavedProgress(workoutWithProgress);
-    setWorkout(workoutWithSavedProgress);
-  }, []);
+    setWorkout(workoutWithProgress);
+    
+    // Salvar no Supabase
+    if (user && isClient) {
+      saveWorkoutToSupabase(workoutWithProgress);
+    }
+  }, [user, isClient, saveWorkoutToSupabase]);
 
   const toggleExercise = useCallback((dayIndex: number, exerciseIndex: number) => {
     setWorkout(prev => {
@@ -227,22 +201,23 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const allCompleted = newWorkout.days[dayIndex].exercises.every(ex => ex.completed);
       newWorkout.days[dayIndex].completed = allCompleted;
       
+      // Salvar no Supabase imediatamente
+      if (user && isClient) {
+        void saveWorkoutToSupabase(newWorkout);
+      }
+      
       return newWorkout;
     });
-  }, []);
+  }, [user, isClient, saveWorkoutToSupabase]);
 
   const completeSet = useCallback((dayIndex: number, exerciseIndex: number) => {
-    const key = `${dayIndex}-${exerciseIndex}`;
-    
-    // Verificar se já está processando
-    if (processingRef.current.has(key)) {
-      console.log(`⏳ Já processando: ${key}`);
+    // Proteção contra execuções duplas
+    if (isProcessingRef.current) {
+      console.log(`⚠️ completeSet já está sendo executado, ignorando...`);
       return;
     }
     
-    // Marcar como processando
-    processingRef.current.add(key);
-    
+    isProcessingRef.current = true;
     console.log(`🔄 completeSet chamado: Dia ${dayIndex + 1}, Exercício ${exerciseIndex + 1}`);
     
     setWorkout(prev => {
@@ -266,18 +241,24 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
           const allCompleted = newWorkout.days[dayIndex].exercises.every(ex => ex.completed);
           newWorkout.days[dayIndex].completed = allCompleted;
         }
+        
+        // Salvar no Supabase imediatamente (sem setTimeout)
+        if (user && isClient) {
+          // Usar void para ignorar a Promise e evitar warnings
+          void saveWorkoutToSupabase(newWorkout);
+        }
       } else {
         console.log(`⚠️ Exercício já tem todas as séries completas!`);
       }
       
+      // Liberar a proteção após a atualização
+      setTimeout(() => {
+        isProcessingRef.current = false;
+      }, 100);
+      
       return newWorkout;
     });
-    
-    // Remover do processamento após um delay
-    setTimeout(() => {
-      processingRef.current.delete(key);
-    }, 1000);
-  }, []);
+  }, [user, isClient, saveWorkoutToSupabase]);
 
   const resetProgress = useCallback(() => {
     const initialWorkout = initializeWorkoutWithProgress({
@@ -297,15 +278,16 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
     setWorkout(initialWorkout);
     
-    // Limpar progresso do localStorage
-    if (isClient) {
-      localStorage.removeItem('workout-progress');
-      localStorage.removeItem('workout-timer');
+    // Salvar no Supabase
+    if (user && isClient) {
+      saveWorkoutToSupabase(initialWorkout);
     }
     
-    // Limpar processamento
-    processingRef.current.clear();
-  }, [workout.week, workout.days, isClient]);
+    // Limpar timer do localStorage
+    if (isClient) {
+      localStorage.removeItem('workout-timer');
+    }
+  }, [workout.week, workout.days, isClient, user, saveWorkoutToSupabase]);
 
   const getProgress = useCallback(() => {
     const total = workout.days.reduce((acc, day) => acc + day.exercises.length, 0);
@@ -334,6 +316,12 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setTimeLeft(0);
   }, []);
 
+  const saveWorkout = useCallback(() => {
+    if (user && isClient) {
+      saveWorkoutToSupabase(workout);
+    }
+  }, [user, isClient, workout, saveWorkoutToSupabase]);
+
   return (
     <WorkoutContext.Provider
       value={{
@@ -343,6 +331,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
         completeSet,
         resetProgress,
         getProgress,
+        saveWorkout,
         restTimer: {
           isActive: timerActive,
           timeLeft,

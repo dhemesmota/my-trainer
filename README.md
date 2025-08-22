@@ -1,245 +1,166 @@
-# 💪 My Trainer
+# My Trainer - Aplicativo de Acompanhamento de Treinos
 
-<div align="center">
+Um aplicativo moderno para acompanhar seus treinos da semana, com sistema de autenticação e registro de progresso de peso.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Shadcn/ui](https://img.shields.io/badge/Shadcn/ui-0.0.1-000000?style=for-the-badge)
+## 🚀 Funcionalidades
 
-**Acompanhe seus treinos da semana com uma interface moderna e intuitiva!**
+### ✅ Sistema de Autenticação
+- Login com email e senha
+- Cadastro de novos usuários
+- Logout seguro
+- Proteção de rotas
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/dhemesmota/my-trainer)
+### ✅ Acompanhamento de Treinos
+- Visualização de treinos da semana
+- Marcação de exercícios completados
+- Progresso em tempo real
+- Timer de descanso
 
-</div>
+### ✅ Sistema de Peso
+- Adicionar peso aos exercícios
+- Visualizar progresso de peso
+- Histórico de treinos
+- Estatísticas de progresso
 
----
+### ✅ Interface Moderna
+- Design responsivo
+- Componentes reutilizáveis
+- Animações suaves
+- UX otimizada
 
-## 🚀 Sobre o Projeto
+## 🛠️ Tecnologias
 
-O **My Trainer** é uma aplicação web moderna desenvolvida para ajudar você a acompanhar seus treinos da semana de forma eficiente e visualmente atrativa. Com uma interface intuitiva e funcionalidades avançadas, você pode:
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS 4
+- **UI Components**: Radix UI, Lucide Icons
+- **Backend**: Supabase (PostgreSQL, Auth, Real-time)
+- **Deploy**: Vercel (recomendado)
 
-- 📊 **Visualizar progresso** em tempo real
-- ✅ **Marcar exercícios** como completados
-- 📈 **Acompanhar séries** e repetições
-- 📁 **Upload de treinos** via arquivo JSON
-- 📱 **Interface responsiva** para qualquer dispositivo
-- 🎨 **Design moderno** com animações suaves
+## 📦 Instalação
 
-## ✨ Funcionalidades
-
-### 🏋️ Gerenciamento de Treinos
-- **Visualização por dia**: Organize seus treinos por dias da semana
-- **Grupos musculares**: Identificação clara dos grupos trabalhados
-- **Detalhes completos**: Séries, repetições, técnicas e observações
-- **Alternativas**: Sugestões de exercícios alternativos
-
-### 📊 Acompanhamento de Progresso
-- **Progresso geral**: Visualização do progresso da semana
-- **Progresso por dia**: Acompanhamento individual de cada dia
-- **Contador de séries**: Controle de séries completadas
-- **Estatísticas**: Métricas detalhadas do seu treino
-
-### 🔄 Sistema de Upload
-- **Upload JSON**: Importe novos treinos via arquivo JSON
-- **Validação**: Verificação automática do formato do arquivo
-- **Download**: Exporte seu treino atual
-- **Persistência**: Dados salvos automaticamente no navegador
-
-### 🎯 Interface Moderna
-- **Cards interativos**: Design limpo e organizado
-- **Animações**: Transições suaves e feedback visual
-- **Responsividade**: Funciona perfeitamente em mobile e desktop
-- **Tema consistente**: Design system unificado
-
-## 🛠️ Tecnologias Utilizadas
-
-### Frontend
-- **[Next.js 14](https://nextjs.org/)** - Framework React com App Router
-- **[TypeScript](https://www.typescriptlang.org/)** - Tipagem estática
-- **[Tailwind CSS](https://tailwindcss.com/)** - Framework CSS utilitário
-- **[Shadcn/ui](https://ui.shadcn.com/)** - Componentes UI modernos
-- **[Lucide React](https://lucide.dev/)** - Ícones bonitos e consistentes
-
-### Estado e Dados
-- **[React Context](https://react.dev/reference/react/createContext)** - Gerenciamento de estado
-- **[LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)** - Persistência de dados
-- **JSON** - Formato de dados para treinos
-
-### Desenvolvimento
-- **[ESLint](https://eslint.org/)** - Linting de código
-- **[Prettier](https://prettier.io/)** - Formatação de código
-- **[Git](https://git-scm.com/)** - Controle de versão
-
-## 📦 Instalação e Uso
-
-### Pré-requisitos
-- Node.js 18+ 
-- npm ou yarn
-
-### 1. Clone o repositório
+1. **Clone o repositório**
 ```bash
-git clone https://github.com/dhemesmota/my-trainer.git
+git clone <url-do-repositorio>
 cd my-trainer
 ```
 
-### 2. Instale as dependências
+2. **Instale as dependências**
 ```bash
 npm install
-# ou
-yarn install
 ```
 
-### 3. Execute o projeto
+3. **Configure o Supabase**
+   - Siga as instruções em [README-SUPABASE.md](./README-SUPABASE.md)
+   - Crie um arquivo `.env.local` com suas credenciais
+
+4. **Execute o projeto**
 ```bash
 npm run dev
-# ou
-yarn dev
 ```
 
-### 4. Acesse a aplicação
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+## 🔧 Configuração do Supabase
+
+### 1. Criar projeto no Supabase
+1. Acesse [supabase.com](https://supabase.com)
+2. Crie um novo projeto
+3. Anote a URL e chave anônima
+
+### 2. Configurar banco de dados
+1. Execute o script `supabase-setup.sql` no SQL Editor
+2. Configure as políticas de segurança
+
+### 3. Configurar variáveis de ambiente
+Crie um arquivo `.env.local`:
+```env
+NEXT_PUBLIC_SUPABASE_URL=sua_project_url_aqui
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_anon_key_aqui
+```
 
 ## 📁 Estrutura do Projeto
 
 ```
-my-trainer/
-├── src/
-│   ├── app/                 # App Router (Next.js 14)
-│   │   ├── globals.css      # Estilos globais
-│   │   ├── layout.tsx       # Layout principal
-│   │   └── page.tsx         # Página inicial
-│   ├── components/          # Componentes React
-│   │   ├── ui/             # Componentes Shadcn/ui
-│   │   ├── DayCard.tsx     # Card de dia de treino
-│   │   ├── ExerciseCard.tsx # Card de exercício
-│   │   └── UploadWorkout.tsx # Componente de upload
-│   ├── contexts/           # Contextos React
-│   │   └── WorkoutContext.tsx # Contexto de treinos
-│   ├── data/               # Dados estáticos
-│   │   └── default-workout.ts # Treino padrão
-│   ├── lib/                # Utilitários
-│   │   └── utils.ts        # Funções utilitárias
-│   └── types/              # Tipos TypeScript
-│       └── workout.ts      # Tipos de treino
-├── public/                 # Arquivos estáticos
-├── components.json         # Configuração Shadcn/ui
-├── tailwind.config.js      # Configuração Tailwind
-├── tsconfig.json           # Configuração TypeScript
-└── package.json            # Dependências e scripts
+src/
+├── app/                    # App Router (Next.js 15)
+├── components/             # Componentes React
+│   ├── Auth/              # Componentes de autenticação
+│   ├── WeightTracker/     # Componentes de peso
+│   └── ui/                # Componentes UI base
+├── contexts/              # Contextos React
+├── lib/                   # Utilitários e configurações
+├── types/                 # Tipos TypeScript
+└── data/                  # Dados estáticos
 ```
 
-## 📋 Formato do JSON
+## 🎯 Como Usar
 
-Para fazer upload de um novo treino, use o seguinte formato JSON:
+### 1. Primeiro Acesso
+1. Acesse o aplicativo
+2. Clique em "Criar Conta"
+3. Preencha seus dados
+4. Confirme o email
 
-```json
-{
-  "week": 2,
-  "days": [
-    {
-      "day": 1,
-      "group": "Bíceps + Tríceps",
-      "exercises": [
-        {
-          "name": "Rosca Direta Barra W",
-          "sets": 4,
-          "reps": "8–10",
-          "technique": "Drop set na última série",
-          "notes": "Cotovelos fixos",
-          "alternatives": [
-            "Rosca direta halteres",
-            "Rosca direta polia"
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
+### 2. Acompanhar Treinos
+1. Faça login
+2. Visualize seus treinos da semana
+3. Marque exercícios como completados
+4. Use o timer de descanso
 
-### Campos Obrigatórios
-- `week`: Número da semana
-- `days`: Array de dias de treino
-- `day`: Número do dia
-- `group`: Grupo muscular
-- `exercises`: Array de exercícios
-- `name`: Nome do exercício
-- `sets`: Número de séries
-- `reps`: Número de repetições
-- `technique`: Técnica de execução
-- `notes`: Observações
-- `alternatives`: Exercícios alternativos
+### 3. Registrar Peso
+1. Clique no ícone de peso no exercício
+2. Preencha peso, repetições e séries
+3. Adicione observações (opcional)
+4. Salve o registro
 
-## 🎨 Componentes Principais
+### 4. Ver Progresso
+1. Clique em "Progresso" no menu
+2. Visualize estatísticas gerais
+3. Acompanhe evolução por exercício
 
-### DayCard
-- Exibe informações do dia de treino
-- Progresso visual do dia
-- Lista de exercícios expansível
-- Ícones por grupo muscular
+## 🔒 Segurança
 
-### ExerciseCard
-- Detalhes completos do exercício
-- Controle de séries e progresso
-- Modal com informações detalhadas
-- Botões de ação (completar série/exercício)
-
-### UploadWorkout
-- Interface de upload de arquivo JSON
-- Validação de formato
-- Download do treino atual
-- Feedback visual de status
-
-## 🔧 Scripts Disponíveis
-
-```bash
-# Desenvolvimento
-npm run dev          # Inicia servidor de desenvolvimento
-npm run build        # Build para produção
-npm run start        # Inicia servidor de produção
-npm run lint         # Executa ESLint
-```
+- **Row Level Security (RLS)** habilitado
+- Usuários só acessam seus próprios dados
+- Autenticação segura com Supabase Auth
+- Validações no frontend e backend
 
 ## 🚀 Deploy
 
 ### Vercel (Recomendado)
 1. Conecte seu repositório ao Vercel
-2. Configure as variáveis de ambiente (se necessário)
-3. Deploy automático a cada push
+2. Configure as variáveis de ambiente
+3. Deploy automático
 
-### Outras Plataformas
-- **Netlify**: Compatível com Next.js
-- **Railway**: Deploy simples e rápido
-- **Heroku**: Suporte a Node.js
+### Outras plataformas
+- Netlify
+- Railway
+- Heroku
 
-## 🤝 Contribuindo
+## 📈 Próximas Funcionalidades
 
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+- [ ] Gráficos de progresso
+- [ ] Notificações push
+- [ ] Compartilhamento de treinos
+- [ ] Modo offline
+- [ ] Integração com wearables
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
 5. Abra um Pull Request
 
-## 📝 Licença
+## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 👨‍💻 Autor
+## 🆘 Suporte
 
-**Daniel Hemes** - [GitHub](https://github.com/dhemesmota)
-
-## 🙏 Agradecimentos
-
-- [Shadcn/ui](https://ui.shadcn.com/) pelos componentes incríveis
-- [Lucide](https://lucide.dev/) pelos ícones bonitos
-- [Tailwind CSS](https://tailwindcss.com/) pelo framework CSS
-- [Next.js](https://nextjs.org/) pelo framework React
+- **Issues**: [GitHub Issues](link-para-issues)
+- **Documentação**: [README-SUPABASE.md](./README-SUPABASE.md)
+- **Email**: seu-email@exemplo.com
 
 ---
 
-<div align="center">
-
-**⭐ Se este projeto te ajudou, considere dar uma estrela!**
-
-</div>
+Desenvolvido com ❤️ usando Next.js, Supabase e TypeScript
