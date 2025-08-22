@@ -229,7 +229,8 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
           console.log(`✅ Exercício completado!`);
           
           // Verificar se todos os exercícios do dia estão completos
-          const allCompleted = newWorkout.days[dayIndex].exercises.every(ex => ex.completed);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const allCompleted = newWorkout.days[dayIndex].exercises.every((ex: any) => ex.completed);
           newWorkout.days[dayIndex].completed = allCompleted;
         }
         
