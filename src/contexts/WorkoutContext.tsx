@@ -123,11 +123,13 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user || !isClient) return;
 
     try {
+      // Buscar o treino mais recente do usuário (maior week)
       const { data, error } = await supabase
         .from('user_workouts')
         .select('*')
         .eq('user_id', user.id)
-        .eq('week', defaultWorkout.week)
+        .order('week', { ascending: false })
+        .limit(1)
         .single();
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
@@ -137,7 +139,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (data && data.workout_data) {
         // Carregar workout do Supabase com progresso
-        console.log('📊 Carregando workout do Supabase:', data.workout_data);
+        console.log('📊 Carregando workout mais recente do Supabase (semana', data.week, '):', data.workout_data);
         setWorkout(data.workout_data);
       } else {
         // Se não há workout salvo, criar um novo com base no padrão
@@ -160,6 +162,7 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (!user || !isClient) return;
 
     try {
+      // Primeiro, salvar o novo treino
       const { error } = await supabase
         .from('user_workouts')
         .upsert({
@@ -172,6 +175,20 @@ export const WorkoutProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (error) {
         console.error('Erro ao salvar workout:', error);
+        return;
+      }
+
+      // Depois, remover todos os treinos antigos (diferentes da semana atual)
+      const { error: deleteError } = await supabase
+        .from('user_workouts')
+        .delete()
+        .eq('user_id', user.id)
+        .neq('week', workoutData.week);
+
+      if (deleteError) {
+        console.error('Erro ao remover treinos antigos:', deleteError);
+      } else {
+        console.log('✅ Treinos antigos removidos com sucesso. Mantendo apenas semana', workoutData.week);
       }
     } catch (error) {
       console.error('Erro ao salvar workout no Supabase:', error);
