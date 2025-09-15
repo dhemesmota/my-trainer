@@ -1,6 +1,7 @@
 'use client';
 
 import { DayCard } from '@/components/DayCard';
+import { FloatingTimer } from '@/components/FloatingTimer';
 import { RestTimer } from '@/components/RestTimer';
 import { UploadWorkout } from '@/components/UploadWorkout';
 import { WeightProgressPage } from '@/components/WeightTracker/WeightProgressPage';
@@ -11,16 +12,16 @@ import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWorkout } from '@/contexts/WorkoutContext';
 import {
-  Activity,
-  BarChart3,
-  Calendar,
-  Dumbbell,
-  LogOut,
-  RefreshCw,
-  Target,
-  TrendingUp,
-  Trophy,
-  Users
+    Activity,
+    BarChart3,
+    Calendar,
+    Dumbbell,
+    LogOut,
+    RefreshCw,
+    Target,
+    TrendingUp,
+    Trophy,
+    Users
 } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -210,6 +211,9 @@ export const DashboardContent: React.FC = () => {
           <WeightProgressPage />
         )}
       </main>
+
+      {/* Timer Flutuante */}
+      <FloatingTimer />
 
       {/* Footer */}
       <footer className="bg-white border-t mt-8 sm:mt-12">
