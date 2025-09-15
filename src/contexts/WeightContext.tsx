@@ -13,6 +13,7 @@ interface WeightContextType {
   updateWeightRecord: (id: string, updates: Partial<WeightRecord>) => Promise<{ error: Error | null }>;
   deleteWeightRecord: (id: string) => Promise<{ error: Error | null }>;
   getExerciseProgress: (exerciseName: string) => WeightProgress | null;
+  getExerciseRecentRecords: (exerciseName: string, limit?: number) => WeightRecord[];
   refreshData: () => Promise<void>;
 }
 
@@ -57,31 +58,37 @@ export const WeightProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     records.forEach(record => {
       const existing = progressMap.get(record.exercise_name);
       
-      if (!existing || record.weight > existing.max_weight) {
+      if (!existing) {
+        // Primeiro registro para este exercício
         progressMap.set(record.exercise_name, {
           exercise_name: record.exercise_name,
           current_weight: record.weight,
           max_weight: record.weight,
           total_workouts: 1,
           last_updated: record.date,
-          progress_percentage: 0, // Será calculado depois
+          progress_percentage: 100,
         });
       } else {
+        // Atualizar contador de treinos
         existing.total_workouts += 1;
-        if (record.date > existing.last_updated) {
+        
+        // Atualizar peso máximo se necessário
+        if (record.weight > existing.max_weight) {
+          existing.max_weight = record.weight;
+        }
+        
+        // Atualizar peso atual (sempre o mais recente)
+        if (record.date >= existing.last_updated) {
           existing.current_weight = record.weight;
           existing.last_updated = record.date;
         }
+        
+        // Recalcular porcentagem de progresso
+        existing.progress_percentage = Math.round((existing.current_weight / existing.max_weight) * 100);
       }
     });
 
-    // Calcular porcentagem de progresso (baseado no peso máximo)
-    const progress = Array.from(progressMap.values()).map(item => ({
-      ...item,
-      progress_percentage: Math.round((item.current_weight / item.max_weight) * 100),
-    }));
-
-    setWeightProgress(progress);
+    setWeightProgress(Array.from(progressMap.values()));
   };
 
   useEffect(() => {
@@ -161,6 +168,13 @@ export const WeightProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return weightProgress.find(progress => progress.exercise_name === exerciseName) || null;
   };
 
+  const getExerciseRecentRecords = (exerciseName: string, limit: number = 3): WeightRecord[] => {
+    return weightRecords
+      .filter(record => record.exercise_name === exerciseName)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, limit);
+  };
+
   const refreshData = async () => {
     await fetchWeightRecords();
   };
@@ -175,6 +189,7 @@ export const WeightProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         updateWeightRecord,
         deleteWeightRecord,
         getExerciseProgress,
+        getExerciseRecentRecords,
         refreshData,
       }}
     >
